@@ -42,12 +42,81 @@ def _fmt_rate(value: Any) -> str:
         return "n/a"
 
 
+def normalize_registry(doc: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize both known registry schemas into the brief-v1 shape.
+
+    Producer schema (real, produced by grade_engine.py v1):
+      calls[] flat: horizon, call_id, band_lo_usd, band_hi_usd,
+      prob_pct, direction, status, verdict, resolved_price_usd,
+      resolved_snapshot_utc, expires_utc
+    Brief-v1 schema (tests/fixtures): horizons[hz].calls[] with id/lo/hi/
+      prob/realized_px/issued_ts/stats objects nested per horizon.
+    Normalized output: horizons[hz] = {"calls": [...], "stats": {...}} with
+    unified field names (id, lo, hi, prob, realized_px, issued_ts).
+    """
+    out: Dict[str, Any] = {}
+    src = doc.get("horizons", {})
+    if not isinstance(src, dict):
+        raise SystemExit("registry is not a registry document (no horizons map)")
+    src_stats = {k: (v if isinstance(v, dict) else {}) for k, v in src.items()}
+    flat = doc.get("calls") if isinstance(doc.get("calls"), list) else []
+    by_hz: Dict[str, List[Dict[str, Any]]] = {}
+    for c in flat:
+        hz = c.get("horizon")
+        if isinstance(hz, str):
+            by_hz.setdefault(hz, []).append({
+                "id": c.get("call_id") or c.get("id"),
+                "lo": c.get("band_lo_usd", c.get("lo")),
+                "hi": c.get("band_hi_usd", c.get("hi")),
+                "prob": c.get("prob_pct", c.get("prob")),
+                "direction": c.get("direction"),
+                "status": c.get("status"),
+                "verdict": c.get("verdict"),
+                "realized_px": c.get("resolved_price_usd", c.get("realized_px")),
+                "issued_ts": c.get("issued_ts"),
+            })
+    for hz, entry in src.items():
+        calls = entry.get("calls", []) if isinstance(entry, dict) else []
+        norm_calls = []
+        for c in calls:
+            norm_calls.append({
+                "id": c.get("id") or c.get("call_id"),
+                "lo": c.get("lo", c.get("band_lo_usd")),
+                "hi": c.get("hi", c.get("band_hi_usd")),
+                "prob": c.get("prob", c.get("prob_pct")),
+                "direction": c.get("direction"),
+                "status": c.get("status"),
+                "verdict": c.get("verdict"),
+                "realized_px": c.get("realized_px", c.get("resolved_price_usd")),
+                "issued_ts": c.get("issued_ts"),
+            })
+        norm_calls.extend(by_hz.pop(hz, []))
+        st = entry.get("stats") if isinstance(entry, dict) else None
+        out[hz] = {"calls": norm_calls, "stats": st or {
+            # producer-schema stats live at horizons[hz] itself
+            "n_graded": entry.get("n_resolved"),
+            "n_resolved": entry.get("n_resolved"),
+            "n_open": entry.get("n_open"),
+            "hit_rate": entry.get("hit_rate"),
+            "brier": entry.get("brier"),
+            "baseline_brier": 0.25,
+            "armed": entry.get("armed"),
+            "min_n": entry.get("min_n"),
+        } if isinstance(entry, dict) else {}}
+    for hz, extra in by_hz.items():
+        out[hz] = {"calls": extra, "stats": src_stats.get(hz, {})}
+    norm: Dict[str, Any] = {"horizons": out}
+    # carry top-level metadata with producer/brief aliases
+    cov = doc.get("coverage") if isinstance(doc.get("coverage"), dict) else {}
+    norm["generated_ts"] = doc.get("generated_ts") or doc.get("anchored_to_last_snapshot_utc", cov.get("coverage_end_utc"))
+    norm["registry_start"] = doc.get("registry_start") or cov.get("production_era_start_utc") or cov.get("coverage_start_utc")
+    return norm
+
+
 def load_registry(path: pathlib.Path) -> Dict[str, Any]:
     with path.open("r", encoding="utf-8") as fh:
         doc = json.load(fh)
-    if not isinstance(doc, dict) or not isinstance(doc.get("horizons"), dict):
-        raise SystemExit("registry is not a data-contract v1 document")
-    return doc
+    return normalize_registry(doc)
 
 
 def _fmt(value: Any) -> str:
@@ -92,14 +161,6 @@ def ledger_entry(horizon: str, entry: Dict[str, Any], window: int = 30) -> str:
         ]
         + tail_lines
     )
-
-
-def _fmt(value: Any) -> str:
-    if isinstance(value, bool):
-        return "yes" if value else "no"
-    if isinstance(value, (int, float)):
-        return f"{float(value):.4g}"
-    return str(value)
 
 
 def scorecard(horizon: str, entry: Dict[str, Any]) -> str:
