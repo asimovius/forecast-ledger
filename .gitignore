@@ -1,0 +1,8 @@
+# Internal
+NOTES.md
+README-dist.md
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/

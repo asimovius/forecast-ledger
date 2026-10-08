@@ -1,0 +1,132 @@
+{
+  "generated_ts": 1791676800,
+  "registry_start": "2026-10-01",
+  "horizons": {
+    "24h": {
+      "calls": [
+        {
+          "id": "btc-24h-20261001-01",
+          "issued_ts": 1790899200,
+          "direction": "Bullish",
+          "prob": 62.0,
+          "lo": 62000,
+          "hi": 66500,
+          "expires_ts": 1790985600,
+          "status": "resolved",
+          "verdict": "inside",
+          "realized_px": 64123.5,
+          "resolved_ts": 1790985661
+        },
+        {
+          "id": "btc-24h-20261002-01",
+          "issued_ts": 1790985600,
+          "direction": "Bearish",
+          "prob": 55.0,
+          "lo": 60800,
+          "hi": 65000,
+          "expires_ts": 1791072000,
+          "status": "resolved",
+          "verdict": "above",
+          "realized_px": 65710.25,
+          "resolved_ts": 1791072064
+        },
+        {
+          "id": "btc-24h-20261003-01",
+          "issued_ts": 1791072000,
+          "direction": "Bullish",
+          "prob": 58.0,
+          "lo": 63000,
+          "hi": 67200,
+          "expires_ts": 1791158400,
+          "status": "open",
+          "verdict": null,
+          "realized_px": null,
+          "resolved_ts": null
+        }
+      ],
+      "stats": {
+        "n_graded": 2,
+        "hit_rate": 0.5,
+        "brier": 0.236,
+        "baseline_brier": 0.25,
+        "armed": true
+      }
+    },
+    "3d": {
+      "calls": [
+        {
+          "id": "btc-3d-20261001-01",
+          "issued_ts": 1790899200,
+          "direction": "Bullish",
+          "prob": 61.0,
+          "lo": 61500,
+          "hi": 67000,
+          "expires_ts": 1791158400,
+          "status": "resolved",
+          "verdict": "inside",
+          "realized_px": 64888.9,
+          "resolved_ts": 1791158472
+        },
+        {
+          "id": "btc-3d-20261004-01",
+          "issued_ts": 1791158400,
+          "direction": "Neutral",
+          "prob": 45.0,
+          "lo": 62500,
+          "hi": 66000,
+          "expires_ts": 1791417600,
+          "status": "open",
+          "verdict": null,
+          "realized_px": null,
+          "resolved_ts": null
+        }
+      ],
+      "stats": {
+        "n_graded": 1,
+        "hit_rate": 1.0,
+        "brier": 0.09,
+        "baseline_brier": 0.25,
+        "armed": false
+      }
+    },
+    "7d": {
+      "calls": [],
+      "stats": {
+        "n_graded": 0,
+        "hit_rate": null,
+        "brier": null,
+        "baseline_brier": 0.25,
+        "armed": false
+      }
+    },
+    "4w": {
+      "calls": [
+        {
+          "id": "btc-4w-20261001-01",
+          "issued_ts": 1790899200,
+          "direction": "Bullish",
+          "prob": 57.0,
+          "lo": 60000,
+          "hi": 71000,
+          "expires_ts": 1793491200,
+          "status": "open",
+          "verdict": null,
+          "realized_px": null,
+          "resolved_ts": null
+        }
+      ],
+      "stats": {
+        "n_graded": 0,
+        "hit_rate": null,
+        "brier": null,
+        "baseline_brier": 0.25,
+        "armed": false
+      }
+    }
+  },
+  "meta": {
+    "attribution": "Market reference data: CoinGecko (synthetic fixture data for tests only)",
+    "framing": "critical decision-making data points",
+    "exchange_derived_note": "perp funding and OI are internal analysis inputs, not part of this dataset"
+  }
+}

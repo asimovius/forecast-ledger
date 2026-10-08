@@ -1,0 +1,11 @@
+{
+  "name": "io.github.asimovius/forecast-ledger",
+  "description": "MCP server for the ForecastLedger public calibration ledger: graded BTC market-forecast registry (24h/3d/7d/4w horizons) served over stdio JSON-RPC 2.0. Critical decision-making data points, not advice.",
+  "version": "0.1.0",
+  "publisher": "asimovius",
+  "protocol_version": "2025-06-18",
+  "transport": "stdio",
+  "entrypoint": "server/mcp_server.py",
+  "repository": "https://github.com/asimovius/forecast-ledger",
+  "license": "MIT"
+}

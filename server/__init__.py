@@ -1,0 +1,1 @@
+"""ForecastLedger MCP server package."""
