@@ -56,7 +56,7 @@ A client session:
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `FORECASTLEDGER_REGISTRY_PATH` | `/root/business/registry/registry.json` | Path to the registry document to serve |
+| `FORECASTLEDGER_REGISTRY_PATH` | the grader engine's registry output path on the deployment host | Path to the registry document to serve |
 
 Point the variable at any registry JSON conforming to the data contract —
 including the committed test fixture (`tests/fixtures/registry.json`,
